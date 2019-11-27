@@ -201,6 +201,7 @@
    ((string= ipa-overlay-position "inline") 'ipa-create-overlay-inline)
    ((string= ipa-overlay-position "above") 'ipa-create-overlay-above)))
 
+;;;###autoload
 (defun ipa-insert ()
  (interactive)
  (unless ipa-annotation-display
@@ -218,6 +219,7 @@
        (message "Annotations in this buffer will be saved only if you save the buffer as a file.")))))
  
 
+;;;###autoload
 (defun ipa-edit (&optional arg)
  (interactive "P")
  (unless ipa-annotation-display
@@ -242,6 +244,7 @@
          (ipa-save-annotations-if-necessary t)))))
 
 
+;;;###autoload
 (defun ipa-move (&optional arg)
  (interactive "P")
  (unless ipa-annotation-display
@@ -332,6 +335,7 @@
 
 
 
+;;;###autoload
 (defun ipa-next ()
   (interactive)
   (unless ipa-annotation-display
@@ -382,6 +386,7 @@
       (message "The text of this annotation is empty.")))
 
 
+;;;###autoload
 (defun ipa-toggle (&optional arg)
     (interactive "P")
     (setq ipa-annotation-display (if arg
@@ -401,6 +406,7 @@
             (message "Annotations are hidden."))))))
 
 
+;;;###autoload
 (defun ipa-show ()
   (interactive)
   (if (not (ipa-get-buffer-file-name))
@@ -686,6 +692,7 @@
     t))
 
 
+;;;###autoload
 (defun ipa-jump ()
   (interactive)
   (with-current-buffer (ipa-find-storage-file)
