@@ -171,18 +171,21 @@
 
 (define-key ipa-mode-map (kbd "<return>") 'ipa-go-to-annotation)
 
-
 (defvar ipa-overriding-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<left>") 'ipa-move-left)
+    (define-key map (kbd "h") 'ipa-move-left)
     (define-key map (kbd "<right>") 'ipa-move-right)
+    (define-key map (kbd "l") 'ipa-move-right)
     (define-key map (kbd "<up>") 'ipa-move-line-up)
+    (define-key map (kbd "k") 'ipa-move-line-up)
     (define-key map (kbd "<down>") 'ipa-move-line-down)
+    (define-key map (kbd "j") 'ipa-move-line-down)
     (define-key map (kbd "<prior>") 'ipa-move-page-up)
     (define-key map (kbd "<next>") 'ipa-move-page-down)
     (define-key map (kbd "<return>") 'ipa-move-finish)
     (define-key map (kbd "<escape>") 'ipa-move-cancel)
-    (define-key map (kbd "h") 'ipa-move-help)
+    (define-key map (kbd "?") 'ipa-move-help)
     map))
 
 (defvar ipa-old-global-map nil)
