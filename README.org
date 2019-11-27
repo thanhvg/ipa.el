@@ -25,24 +25,34 @@ trivial.
 
 * Commands
 
-| Commands     | Info                                                                      |
-| =ipa-insert=   | insert annotation at point                                                |
-| =ipa-edit=     | edit the first annotation after point (with universal argument: before    |
-|              | point)                                                                    |
-| =ipa-next=     | goes to the next annotation in the buffer                                 |
-| =ipa-previous= | goes to the previous annotation in the buffer                             |
-| =ipa-move=     | move the first annotation after point (with universal argument: before    |
-|              | point)                                                                    |
-| =ipa-toggle=   | hide/show annotations                                                     |
-| =ipa-show=     | show all saved annotations for the current file (in the storage buffer    |
-|              | you can press Enter on any annotation to go to its location)              |
-|              |                                                                           |
-| =ipa-jump=     | jump to any annotation with id completion Annotations can optionally have |
-|              | ids in their text with the following format: =[id]annotation-text= The id   |
-|              | itself doesn't appear in the annotated buffer. It only serves the purpose |
-|              | of giving a unique id to the annotation, so that you can jump to it       |
-|              | quickly. If an annotation has an id, but no other text then it is         |
-|              | effectively the same as a usual bookmark in emacs. Only annotations       |
-|              | appearing in =ipa-file= can be jumped to, so unsaved annotations does not   |
-|              | count. If there are more annotations defined with the same id then the    |
-|              | first one found in `ipa-file' is used.                                    |
++--------------+--------------------------------------------------------------------------+
+| Commands     | Info                                                                     |
++--------------+--------------------------------------------------------------------------+
+| =ipa-insert=   | insert annotation at point                                               |
++--------------+--------------------------------------------------------------------------+
+| =ipa-edit=     | edit the first annotation after point (with universal argument: before   |
+|              |point)                                                                    |
++--------------+--------------------------------------------------------------------------+
+| =ipa-next=     | goes to the next annotation in the buffer                                |
++--------------+--------------------------------------------------------------------------+
+| =ipa-previous= | goes to the previous annotation in the buffer                            |
++--------------+--------------------------------------------------------------------------+
+| =ipa-move=     | move the first annotation after point (with universal argument: before   |
+|              |point)                                                                    |
++--------------+--------------------------------------------------------------------------+
+| =ipa-toggle=   | hide/show annotations                                                    |
++--------------+--------------------------------------------------------------------------+
+| =ipa-show=     | show all saved annotations for the current file (in the storage buffer   |
+|              |you can press Enter on any annotation to go to its location)              |
+|              |                                                                          |
++--------------+--------------------------------------------------------------------------+
+| =ipa-jump=     | jump to any annotation with id completion Annotations can optionally have|
+|              |ids in their text with the following format: =[id]annotation-text= The id   |
+|              |itself doesn't appear in the annotated buffer. It only serves the purpose |
+|              |of giving a unique id to the annotation, so that you can jump to it       |
+|              |quickly. If an annotation has an id, but no other text then it is         |
+|              |effectively the same as a usual bookmark in emacs. Only annotations       |
+|              |appearing in =ipa-file= can be jumped to, so unsaved annotations does not   |
+|              |count. If there are more annotations defined with the same id then the    |
+|              |first one found in `ipa-file' is used.                                    |
++--------------+--------------------------------------------------------------------------+
