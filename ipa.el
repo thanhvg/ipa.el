@@ -51,11 +51,11 @@
 ;;;   ipa-toggle   - hide/show annotations
 ;;;
 ;;;   ipa-show     - show all saved annotations for the current file
-;;;                  (in the storage buffer you can press Enter on any 
+;;;                  (in the storage buffer you can press Enter on any
 ;;;                   annotation to go to its location)
 ;;;
 ;;;   ipa-jump     - jump to any annotation with id completion
-;;;                  
+;;;
 ;;;                  Annotations can optionally have ids in their
 ;;;                  text with the following format: [id]annotation-text
 ;;;
@@ -162,8 +162,8 @@
                                            "\\(.*\\)\n") . ipa-file-face)
                                  ("^|" . (0 ipa-annotation-face t))
                                  (ipa-font-lock-pos-info .
-                                  ((1 ipa-pos-info-face t)
-                                   (2 ipa-annotation-face t)))))
+                                                         ((1 ipa-pos-info-face t)
+                                                          (2 ipa-annotation-face t)))))
 
 
 (define-derived-mode ipa-mode fundamental-mode "IPA"
@@ -193,7 +193,7 @@
 (defvar ipa-overlay-being-moved nil)
 
 (defvar ipa-original-position-of-overlay-being-moved nil)
- 
+
 (defun ipa-set-overlay-text-function()
   (cond
    ((string= ipa-overlay-position "inline") 'ipa-set-overlay-text-inline)
@@ -206,64 +206,64 @@
 
 ;;;###autoload
 (defun ipa-insert ()
- (interactive)
- (unless ipa-annotation-display
-   (ipa-toggle))
+  (interactive)
+  (unless ipa-annotation-display
+    (ipa-toggle))
 
- (let ((text (read-string "text: ")))
-   (if (equal text  "")
-       (message "Empty annotations are not inserted.")
-       
-     (funcall (ipa-create-overlay-function) (point) text)
+  (let ((text (read-string "text: ")))
+    (if (equal text  "")
+        (message "Empty annotations are not inserted.")
 
-     (if (ipa-get-buffer-file-name)
-         (ipa-save-annotations-if-necessary)
+      (funcall (ipa-create-overlay-function) (point) text)
 
-       (message "Annotations in this buffer will be saved only if you save the buffer as a file.")))))
- 
+      (if (ipa-get-buffer-file-name)
+          (ipa-save-annotations-if-necessary)
+
+        (message "Annotations in this buffer will be saved only if you save the buffer as a file.")))))
+
 
 ;;;###autoload
 (defun ipa-edit (&optional arg)
- (interactive "P")
- (unless ipa-annotation-display
-   (ipa-toggle))
+  (interactive "P")
+  (unless ipa-annotation-display
+    (ipa-toggle))
 
- (let ((annotation (if arg
-                       (ipa-previous)
-                     (ipa-next))))
-   (if annotation
-       (let* ((text (read-string "text (empty to remove): " (cdr  annotation))))
-         (if (equal text "")
-             (progn
-               (delete-overlay (car annotation))
-               (setq ipa-annotations-in-buffer
-                     (delq annotation ipa-annotations-in-buffer))
-               (message "Deleted annotation."))
+  (let ((annotation (if arg
+                        (ipa-previous)
+                      (ipa-next))))
+    (if annotation
+        (let* ((text (read-string "text (empty to remove): " (cdr  annotation))))
+          (if (equal text "")
+              (progn
+                (delete-overlay (car annotation))
+                (setq ipa-annotations-in-buffer
+                      (delq annotation ipa-annotations-in-buffer))
+                (message "Deleted annotation."))
 
-           (funcall (ipa-set-overlay-text-function) (car annotation) text)
-           (setcdr annotation text)
-           (message "Updated annotation."))
+            (funcall (ipa-set-overlay-text-function) (car annotation) text)
+            (setcdr annotation text)
+            (message "Updated annotation."))
 
-         (ipa-save-annotations-if-necessary t)))))
+          (ipa-save-annotations-if-necessary t)))))
 
 
 ;;;###autoload
 (defun ipa-move (&optional arg)
- (interactive "P")
- (unless ipa-annotation-display
-   (ipa-toggle))
+  (interactive "P")
+  (unless ipa-annotation-display
+    (ipa-toggle))
 
- (let ((annotation (if arg
-                       (ipa-previous)
-                     (ipa-next))))
-   (when annotation
-     (setq ipa-overlay-being-moved (car annotation))
-     (setq ipa-original-position-of-overlay-being-moved
-           (overlay-start ipa-overlay-being-moved))
-     (setq ipa-old-global-map global-map)
-     (use-global-map ipa-overriding-map)
-     (setq overriding-terminal-local-map ipa-overriding-map)
-     (add-hook 'post-command-hook 'ipa-show-help))))
+  (let ((annotation (if arg
+                        (ipa-previous)
+                      (ipa-next))))
+    (when annotation
+      (setq ipa-overlay-being-moved (car annotation))
+      (setq ipa-original-position-of-overlay-being-moved
+            (overlay-start ipa-overlay-being-moved))
+      (setq ipa-old-global-map global-map)
+      (use-global-map ipa-overriding-map)
+      (setq overriding-terminal-local-map ipa-overriding-map)
+      (add-hook 'post-command-hook 'ipa-show-help))))
 
 
 (defun ipa-show-help ()
@@ -372,7 +372,7 @@
     (while (and annotations continue)
       (if (> (overlay-start (car (car annotations))) (point))
           (setq continue nil)
-      
+
         (setq annotation (pop annotations))))
 
     (if (not annotation)
@@ -391,22 +391,22 @@
 
 ;;;###autoload
 (defun ipa-toggle (&optional arg)
-    (interactive "P")
-    (setq ipa-annotation-display (if arg
-                                     (> (prefix-numeric-value arg) 0)
-                                   (not ipa-annotation-display)))    
-    (if ipa-annotation-display
-        (dolist (buffer (buffer-list))
-          (with-current-buffer buffer
-            (dolist (annotation ipa-annotations-in-buffer)
-              (funcall (ipa-set-overlay-text-function) (car annotation) (cdr annotation))
-              (message "Annotations are shown."))))
-
+  (interactive "P")
+  (setq ipa-annotation-display (if arg
+                                   (> (prefix-numeric-value arg) 0)
+                                 (not ipa-annotation-display)))
+  (if ipa-annotation-display
       (dolist (buffer (buffer-list))
         (with-current-buffer buffer
           (dolist (annotation ipa-annotations-in-buffer)
-            (funcall (ipa-set-overlay-text-function) (car annotation) "")
-            (message "Annotations are hidden."))))))
+            (funcall (ipa-set-overlay-text-function) (car annotation) (cdr annotation))
+            (message "Annotations are shown."))))
+
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (dolist (annotation ipa-annotations-in-buffer)
+          (funcall (ipa-set-overlay-text-function) (car annotation) "")
+          (message "Annotations are hidden."))))))
 
 
 ;;;###autoload
@@ -435,7 +435,7 @@
       (with-current-buffer (ipa-find-storage-file)
         (save-excursion
           (goto-char (point-min))
-      
+
           (unless (re-search-forward (concat ipa-file-regexp
                                              filename "\n")
                                      nil t)
@@ -481,73 +481,73 @@
 
 (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
 
-     
+
 (defun ipa-load-annotations-into-buffer ()
   (let ((filename (ipa-get-buffer-file-name))
         (buffer (current-buffer)))
-    (if (ipa-find-storage-file-p) 
-    (with-current-buffer (ipa-find-storage-file)
-      (save-excursion
-        (goto-char (point-min))
-        (if (re-search-forward (concat ipa-file-regexp filename "\n") 
-                               nil t)
-            (let ((end (save-excursion
-                         (if (re-search-forward ipa-file-regexp nil t)
-                             (line-beginning-position)
-                           (point-max)))))
-              (with-current-buffer buffer
-                (setq ipa-annotations-in-buffer nil))
+    (if (ipa-find-storage-file-p)
+        (with-current-buffer (ipa-find-storage-file)
+          (save-excursion
+            (goto-char (point-min))
+            (if (re-search-forward (concat ipa-file-regexp filename "\n")
+                                   nil t)
+                (let ((end (save-excursion
+                             (if (re-search-forward ipa-file-regexp nil t)
+                                 (line-beginning-position)
+                               (point-max)))))
+                  (with-current-buffer buffer
+                    (setq ipa-annotations-in-buffer nil))
 
-              (let (text pos)
-                (while (< (point) end)
-                  (if (and (not (looking-at ipa-line-continuation))
-                           text)
-                      (with-current-buffer buffer
-                        (funcall (ipa-create-overlay-function) pos text)
-                        (setq text nil)
-                        (setq pos nil)))
+                  (let (text pos)
+                    (while (< (point) end)
+                      (if (and (not (looking-at ipa-line-continuation))
+                               text)
+                          (with-current-buffer buffer
+                            (funcall (ipa-create-overlay-function) pos text)
+                            (setq text nil)
+                            (setq pos nil)))
 
-                  (cond ((let ((pos-info (ipa-get-pos-info)))
-                           (when pos-info
-                             (let ((after (plist-get pos-info 'after))
-                                   (before (plist-get pos-info 'before)))
-                               (with-current-buffer buffer
-                                 (save-excursion
-                                   ;; using the same algorithm as bookmarks
-                                   (goto-char (plist-get pos-info 'pos))
+                      (cond ((let ((pos-info (ipa-get-pos-info)))
+                               (when pos-info
+                                 (let ((after (plist-get pos-info 'after))
+                                       (before (plist-get pos-info 'before)))
+                                   (with-current-buffer buffer
+                                     (save-excursion
+                                       ;; using the same algorithm as bookmarks
+                                       (goto-char (plist-get pos-info 'pos))
 
-                                   (if (and after
-                                            (search-forward after nil t))
-                                       (goto-char (match-beginning 0)))
-                                   (if (and before 
-                                            (search-backward before nil t))
-                                       (goto-char (match-end 0)))
+                                       (if (and after
+                                                (search-forward after nil t))
+                                           (goto-char (match-beginning 0)))
+                                       (if (and before
+                                                (search-backward before nil t))
+                                           (goto-char (match-end 0)))
 
-                                   (setq pos (point)))))
+                                       (setq pos (point)))))
 
-                             (if (looking-at ":\\(.+\\)")
-                                 (setq text (match-string 1))
-                               (error "Annotation storage format error"))
+                                 (if (looking-at ":\\(.+\\)")
+                                     (setq text (match-string 1))
+                                   (error "Annotation storage format error"))
 
-                             ;; making it explicit
-                             t)))
+                                 ;; making it explicit
+                                 t)))
 
-                        ((looking-at ipa-line-continuation)
-                         (setq text 
-                               (concat text "\n"
-                                       (buffer-substring (1+ (point))
-                                                         (line-end-position)))))
+                            ((looking-at ipa-line-continuation)
+                             (setq text
+                                   (concat text "\n"
+                                           (buffer-substring (1+ (point))
+                                                             (line-end-position)))))
 
-                        (t
-                         'skip))
+                            (t
+                             'skip))
 
-                  (forward-line 1)))
+                      (forward-line 1)))
 
-              (message "Resaving annotations so that positions are updated...")
-              (with-current-buffer buffer
-                (ipa-save-annotations-in-buffer))
-              
-              (message "Annotations loaded."))))))))
+                  (message "Resaving annotations so that positions are updated...")
+                  (with-current-buffer buffer
+                    (ipa-save-annotations-in-buffer))
+
+                  (message "Annotations loaded."))))))))
 
 (add-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
 (add-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
@@ -564,33 +564,33 @@
 
 ;; OVERLAY ABOVE THE LINE
 
- (defun string-repeat (str n)
-   (let ((retval ""))
-     (dotimes (i n)
-       (setq retval (concat retval str)))
-     retval))
- 
- (defun ipa-set-overlay-text-above (overlay text)
-   (if (string-match ipa-annotation-id-regexp text)
-       (setq text (match-string 2 text)))
+(defun string-repeat (str n)
+  (let ((retval ""))
+    (dotimes (i n)
+      (setq retval (concat retval str)))
+    retval))
+
+(defun ipa-set-overlay-text-above (overlay text)
+  (if (string-match ipa-annotation-id-regexp text)
+      (setq text (match-string 2 text)))
   (save-excursion
     (let ((ipa-indent-level (current-indentation)))
-    (beginning-of-line)
-    (overlay-put overlay 'before-string
-                 (if (equal text "") ""
-    	   (propertize
-    	    (concat
-    	     (string-repeat " " ipa-indent-level) "* " text "\n")
-    	    'face ipa-annotation-face))))))
+      (beginning-of-line)
+      (overlay-put overlay 'before-string
+                   (if (equal text "") ""
+                     (propertize
+                      (concat
+                       (string-repeat " " ipa-indent-level) "* " text "\n")
+                      'face ipa-annotation-face))))))
 
 (defun ipa-create-overlay-above (pos text)
   (save-excursion
     (goto-char pos)
     (setq pos (point-at-bol))
     (let ((overlay (make-overlay pos pos nil t nil)))
-     (funcall (ipa-set-overlay-text-function) overlay text)
-     (push (cons overlay text) ipa-annotations-in-buffer)
-     (ipa-sort-overlays))))
+      (funcall (ipa-set-overlay-text-function) overlay text)
+      (push (cons overlay text) ipa-annotations-in-buffer)
+      (ipa-sort-overlays))))
 
 (defun ipa-set-overlay-text-inline (overlay text)
   (if (string-match ipa-annotation-id-regexp text)
@@ -623,7 +623,7 @@
   (if (funcall ipa-file-function)
       (file-exists-p (funcall ipa-file-function))))
 
-  
+
 (defun ipa-get-global-file ()
   ipa-file)
 
@@ -669,9 +669,9 @@
            (beginning-of-line)
            (looking-at ipa-line-continuation))
          (save-excursion
-            (if (re-search-backward "^(" nil t)
-                (ipa-go-to-annotation)
-              (error "Containing annotation is not found"))))
+           (if (re-search-backward "^(" nil t)
+               (ipa-go-to-annotation)
+             (error "Containing annotation is not found"))))
 
         (t
          (message "There is nothing on the current line."))))
@@ -701,7 +701,7 @@
   (with-current-buffer (ipa-find-storage-file)
     (save-excursion
       (goto-char (point-min))
-      (let (ids)        
+      (let (ids)
         (while (re-search-forward "^(" nil t)
           (backward-char)
           (forward-sexp)

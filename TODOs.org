@@ -1,2 +1,7 @@
 * TODO project wise annotations
 * TODO reloading buffer duplicates annotations
+* TODO ipa-show can be called anywhere 
+currently if buffer has no anotations it's not possible to call
+* TODO ipa file can be org file
+  and the ipa-mode now is minor mode
+  
