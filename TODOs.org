@@ -4,4 +4,6 @@
 currently if buffer has no anotations it's not possible to call
 * TODO ipa file can be org file
   and the ipa-mode now is minor mode
-  
+* TODO ipa-delete function  
+delete above 
+delete bellow
