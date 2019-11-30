@@ -140,9 +140,9 @@
 
 ;;----------------------------------------------------------------------
 
-(defvar ipa-annotations-in-buffer nil)
 
-(make-variable-buffer-local 'ipa-annotations-in-buffer)
+(make-variable-buffer-local
+ (defvar ipa-annotations-in-buffer nil))
 
 (defvar ipa-annotation-display t)
 
@@ -155,7 +155,6 @@
 (defconst ipa-annotation-id-regexp "\\s-*\\[\\(.+\\)?\\]\\(.*\\)")
 
 
-
 (defvar ipa-pos-info-face '(face nil invisible t))
 
 (defvar ipa-font-lock-keywords `((,(concat ipa-file-regexp
@@ -166,10 +165,10 @@
                                                           (2 ipa-annotation-face t)))))
 
 
-(define-derived-mode ipa-mode fundamental-mode "IPA"
+(define-derived-mode ipa-list-mode fundamental-mode "IPL"
   (set (make-local-variable 'font-lock-defaults) '(ipa-font-lock-keywords)))
 
-(define-key ipa-mode-map (kbd "<return>") 'ipa-go-to-annotation)
+(define-key ipa-list-mode-map (kbd "<return>") 'ipa-go-to-annotation)
 
 (defvar ipa-overriding-map
   (let ((map (make-sparse-keymap)))
@@ -220,7 +219,6 @@
           (ipa-save-annotations-if-necessary)
 
         (message "Annotations in this buffer will be saved only if you save the buffer as a file.")))))
-
 
 ;;;###autoload
 (defun ipa-edit (&optional arg)
@@ -425,7 +423,6 @@
 
           (message "No annotations found for file."))))))
 
-
 (defun ipa-save-annotations-in-buffer (&optional even-if-empty)
   (when (or ipa-annotations-in-buffer
             even-if-empty)
@@ -477,10 +474,6 @@
 
           (save-buffer)
           (message "Annotations saved."))))))
-
-
-(add-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
-
 
 (defun ipa-load-annotations-into-buffer ()
   (let ((filename (ipa-get-buffer-file-name))
@@ -549,10 +542,6 @@
 
                   (message "Annotations loaded."))))))))
 
-(add-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
-(add-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
-
-
 (defun ipa-get-pos-info ()
   (and (looking-at "(")
        (read (current-buffer))))
@@ -616,13 +605,12 @@
 (defun ipa-find-storage-file ()
   (if (funcall ipa-file-function)
       (with-current-buffer (find-file-noselect (funcall ipa-file-function))
-        (ipa-mode)
+        (ipa-list-mode)
         (current-buffer))))
 
 (defun ipa-find-storage-file-p ()
   (if (funcall ipa-file-function)
       (file-exists-p (funcall ipa-file-function))))
-
 
 (defun ipa-get-global-file ()
   ipa-file)
@@ -642,7 +630,6 @@
                     current-file
                   (file-name-directory current-file))
                 (file-name-nondirectory ipa-file)))))
-
 
 (defun ipa-go-to-annotation ()
   (interactive)
@@ -694,7 +681,6 @@
                             colon-end)))
     t))
 
-
 ;;;###autoload
 (defun ipa-jump ()
   (interactive)
@@ -720,7 +706,6 @@
 
           (message "There are no annotations with ids."))))))
 
-
 (defun ipa-get-buffer-file-name ()
   (let ((name (or (buffer-file-name)
                   (save-excursion
@@ -729,6 +714,28 @@
     (if name
         (file-truename name))))
 
+;;;###autoload
+(define-minor-mode ipa-mode
+  "FIXME."
+  :lighter " ipa"
+  :keymap (make-sparse-keymap)
+  :global t
+  (make-local-variable 'foo-count)
+  (if ipa-mode
+      (ipa-mode-enable)
+    (ipa-mode-disable)))
+
+(defun ipa-mode-enable ()
+  (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
+  (add-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
+  (add-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer))
+
+(defun ipa-mode-disable ()
+  (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
+  (remove-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
+  (remove-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
+  (ipa-toggle -1)
+  (setq ipa-annotation-display t))
 
 (provide 'ipa)
 ;;; ipa.el ends here
