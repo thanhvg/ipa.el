@@ -535,6 +535,7 @@
                     (ipa-save-annotations-in-buffer))
 
                   (message "Annotations loaded."))))))))
+
 (defun ipa-load-annotations-into-buffer-maybe ()
   (unless ipa-mode
     (ipa-load-annotations-into-buffer)))
@@ -715,41 +716,27 @@
 (define-minor-mode ipa-mode
   "FIXME."
   :lighter "ipa"
-  :global t
+  ;; :global t
   :keymap (make-sparse-keymap)
   (if ipa-mode
       (ipa-mode-enable)
     (ipa-mode-disable)))
 
 (defun ipa-mode-enable ()
-  (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
-  ;; (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer 0 t)
-  ;; (add-hook 'change-major-mode-hook 'ipa-load-annotations-into-buffer)
+  (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer 0 t)
   ;; (add-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
   ;; (add-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
   (make-variable-buffer-local 'ipa-annotations-in-buffer)
   (ipa-load-annotations-into-buffer))
 
 (defun ipa-mode-disable ()
-  (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
-  ;; (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer t)
-  ;; (remove-hook 'change-major-mode-hook 'ipa-load-annotations-into-buffer)
+  ;; (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
+  (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer t)
   ;; (remove-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
   ;; (remove-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
   (ipa-toggle -1)
   (setq ipa-annotation-display t)
   (kill-local-variable 'ipa-annotations-in-buffer))
 
-;; (defun turn-on-ipa-mode ()
-;;   (ipa-mode 1))
-
-;; (define-globalized-minor-mode global-ipa-mode
-;;   ipa-mode turn-on-ipa-mode)
-
-;; (add-hook 'change-major-mode-hook 'ipa-mode)
-;; (remove-hook 'change-major-mode-hook 'ipa-mode)
-
-;; (add-hook 'prog-mode-hook 'ipa-mode)
-;; (remove-hook 'prog-mode-hook 'ipa-mode)
 (provide 'ipa)
 ;;; ipa.el ends here
