@@ -31,7 +31,6 @@ with universal argument: before point
 ** ipa-previous: goes to the previous annotation in the buffer
 ** ipa-move: move the first annotation after point
 with universal argument: before point
-** ipa-toggle: hide/show annotations
 ** ipa-show: show all saved annotations for the current file
 in the storage buffer you can press Enter on any annotation to go to its
 location

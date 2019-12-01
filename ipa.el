@@ -48,8 +48,6 @@
 ;;;   ipa-move     - move the first annotation after point
 ;;;                  (with universal argument: before point)
 ;;;
-;;;   ipa-toggle   - hide/show annotations
-;;;
 ;;;   ipa-show     - show all saved annotations for the current file
 ;;;                  (in the storage buffer you can press Enter on any
 ;;;                   annotation to go to its location)
@@ -143,8 +141,6 @@
 
 (defvar ipa-annotations-in-buffer nil)
 
-(defvar ipa-annotation-display t)
-
 (defconst ipa-line-continuation "|")
 
 (defconst ipa-file-marker "\f")
@@ -205,9 +201,6 @@
 ;;;###autoload
 (defun ipa-insert ()
   (interactive)
-  (unless ipa-annotation-display
-    (ipa-toggle))
-
   (let ((text (read-string "text: ")))
     (if (equal text  "")
         (message "Empty annotations are not inserted.")
@@ -222,9 +215,6 @@
 ;;;###autoload
 (defun ipa-edit (&optional arg)
   (interactive "P")
-  (unless ipa-annotation-display
-    (ipa-toggle))
-
   (let ((annotation (if arg
                         (ipa-previous)
                       (ipa-next))))
@@ -247,9 +237,6 @@
 ;;;###autoload
 (defun ipa-move (&optional arg)
   (interactive "P")
-  (unless ipa-annotation-display
-    (ipa-toggle))
-
   (let ((annotation (if arg
                         (ipa-previous)
                       (ipa-next))))
@@ -336,9 +323,6 @@
 ;;;###autoload
 (defun ipa-next ()
   (interactive)
-  (unless ipa-annotation-display
-    (ipa-toggle))
-
   (let ((annotations ipa-annotations-in-buffer)
         annotation)
     (while (and annotations
@@ -357,9 +341,6 @@
 
 (defun ipa-previous ()
   (interactive)
-  (unless ipa-annotation-display
-    (ipa-toggle))
-
   (let ((annotations ipa-annotations-in-buffer)
         (continue t)
         annotation)
@@ -381,25 +362,11 @@
   (if (equal (overlay-get overlay 'before-string) "")
       (message "The text of this annotation is empty.")))
 
-;;;###autoload
-(defun ipa-toggle (&optional arg)
-  (interactive "P")
-  (setq ipa-annotation-display (if arg
-                                   (> (prefix-numeric-value arg) 0)
-                                 (not ipa-annotation-display)))
-  (if ipa-annotation-display
-      (dolist (buffer (buffer-list))
-        (with-current-buffer buffer
-          (dolist (annotation ipa-annotations-in-buffer)
-            (funcall (ipa-set-overlay-text-function) (car annotation) (cdr annotation))
-            (message "Annotations are shown."))))
-
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-        (dolist (annotation ipa-annotations-in-buffer)
-          (funcall (ipa-set-overlay-text-function) (car annotation) "")
-          (message "Annotations are hidden."))))))
-
+(defun ipa-clear ()
+  (message "clearing")
+  (dolist (annotation ipa-annotations-in-buffer)
+    (funcall (ipa-set-overlay-text-function)
+             (car annotation) "")))
 
 ;;;###autoload
 (defun ipa-show ()
@@ -634,8 +601,6 @@
   (cond ((save-excursion
            (beginning-of-line)
            (looking-at (concat ipa-file-regexp "\\(.*\\)")))
-         (unless ipa-annotation-display
-           (ipa-toggle))
          (find-file (match-string 1)))
 
         ((let ((pos-info (save-excursion
@@ -724,6 +689,7 @@
 
 (defun ipa-mode-enable ()
   (add-hook 'after-save-hook 'ipa-save-annotations-in-buffer 0 t)
+  (add-hook 'before-revert-hook 'ipa-clear 0 t)
   ;; (add-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
   ;; (add-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
   (make-variable-buffer-local 'ipa-annotations-in-buffer)
@@ -732,11 +698,14 @@
 (defun ipa-mode-disable ()
   ;; (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer)
   (remove-hook 'after-save-hook 'ipa-save-annotations-in-buffer t)
+  (remove-hook 'before-revert-hook 'ipa-clear t)
   ;; (remove-hook 'find-file-hook 'ipa-load-annotations-into-buffer)
   ;; (remove-hook 'dired-after-readin-hook 'ipa-load-annotations-into-buffer)
-  (ipa-toggle -1)
+  (ipa-clear)
   (setq ipa-annotation-display t)
   (kill-local-variable 'ipa-annotations-in-buffer))
 
+;; (add-hook 'find-file-hook 'ipa-mode)
+;; (remove-hook 'find-file-hook 'ipa-mode)
 (provide 'ipa)
 ;;; ipa.el ends here

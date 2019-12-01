@@ -1,5 +1,6 @@
 * TODO project wise annotations
-* TODO reloading buffer duplicates annotations
+* reloading buffer duplicates annotations
+  fix: use before-revert-hook
 * TODO ipa-show can be called anywhere 
 currently if buffer has no anotations it's not possible to call
 * TODO ipa file can be org file
@@ -10,3 +11,7 @@ delete bellow
 * minor mode 
   make ipa-mode
   can't make it a global mode because some mode such as helm-mode is incompatible with 
+
+* remove ipa-toggle and ipa-annotation-display
+now that it's a minor mode, ipa-toggle is working all buffers
+we need ipa-clear on current buffer
