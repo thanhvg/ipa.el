@@ -363,7 +363,6 @@
       (message "The text of this annotation is empty.")))
 
 (defun ipa-clear ()
-  (message "clearing")
   (dolist (annotation ipa-annotations-in-buffer)
     (funcall (ipa-set-overlay-text-function)
              (car annotation) "")))
@@ -433,8 +432,7 @@
               (forward-line -1)
               (delete-region (point) end)))
 
-          (save-buffer)
-          (message "Annotations saved."))))))
+          (save-buffer))))))
 
 (defun ipa-load-annotations-into-buffer ()
   (let ((filename (ipa-get-buffer-file-name))
