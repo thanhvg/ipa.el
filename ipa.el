@@ -528,12 +528,14 @@
   (save-excursion
     (let ((ipa-indent-level (current-indentation)))
       (beginning-of-line)
-      (overlay-put overlay 'before-string
-                   (if (equal text "") ""
-                     (propertize
-                      (concat
-                       (string-repeat " " ipa-indent-level) "* " text "\n")
-                      'face ipa-annotation-face))))))
+      (let ((text (mapconcat #'identity (split-string text "\n")
+                             (concat "\n" (string-repeat " " (+ 2 ipa-indent-level))))))
+        (overlay-put overlay 'before-string
+                     (if (equal text "") ""
+                       (propertize
+                        (concat
+                         (string-repeat " " ipa-indent-level) "* " text "\n")
+                        'face ipa-annotation-face)))))))
 
 (defun ipa-create-overlay-above (pos text)
   (save-excursion
