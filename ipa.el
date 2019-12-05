@@ -517,6 +517,7 @@
 ;; OVERLAY ABOVE THE LINE
 
 (defun ipa-string-repeat (str n)
+  "Make a string of N x STR."
   (let ((retval ""))
     (dotimes (i n)
       (setq retval (concat retval str)))
@@ -528,14 +529,18 @@
   (save-excursion
     (let ((ipa-indent-level (current-indentation)))
       (beginning-of-line)
-      (let ((text (mapconcat #'identity (split-string text "\n")
-                             (concat "\n" (ipa-string-repeat " " (+ 2 ipa-indent-level))))))
+      (let ((text (mapconcat
+                   (lambda (it)
+                     (propertize it 'face ipa-annotation-face))
+                   (split-string text "\n")
+                   (concat "\n" (ipa-string-repeat " " (+ 2 ipa-indent-level))))))
         (overlay-put overlay 'before-string
                      (if (equal text "") ""
-                       (propertize
-                        (concat
-                         (ipa-string-repeat " " ipa-indent-level) "* " text "\n")
-                        'face ipa-annotation-face)))))))
+                       (concat
+                        (ipa-string-repeat " " ipa-indent-level)
+                        "* "
+                        text
+                        "\n")))))))
 
 (defun ipa-create-overlay-above (pos text)
   (save-excursion
