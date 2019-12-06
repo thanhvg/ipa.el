@@ -198,18 +198,33 @@
    ((string= ipa-overlay-position "inline") 'ipa-create-overlay-inline)
    ((string= ipa-overlay-position "above") 'ipa-create-overlay-above)))
 
+
+;; https://stackoverflow.com/questions/16992726/how-to-prompt-the-user-for-a-block-of-text-in-elisp
+(defun ipa--read-string-with-multiple-line (prompt pre-string exit-keyseq)
+  "Read multiline from minibuffer.
+PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
+  (let ((keymap (copy-keymap minibuffer-local-map))
+        ;; enable evil in minibuffer
+        ;; https://github.com/emacs-evil/evil/pull/1059
+        (evil-want-minibuffer t))
+    (define-key keymap (kbd "RET") 'newline)
+    (define-key keymap exit-keyseq 'exit-minibuffer)
+    (read-from-minibuffer prompt pre-string keymap)))
+
+(defun ipa--read-string (prompt &optional pre-string)
+  (ipa--read-string-with-multiple-line (concat prompt " C-s to submit, C-g to cancel:\n")
+                                       pre-string
+                                       (kbd "C-s")))
+
 ;;;###autoload
 (defun ipa-insert ()
   (interactive)
-  (let ((text (read-string "text: ")))
+  (let ((text (ipa--read-string "Insert comment")))
     (if (equal text  "")
         (message "Empty annotations are not inserted.")
-
       (funcall (ipa-create-overlay-function) (point) text)
-
       (if (ipa-get-buffer-file-name)
           (ipa-save-annotations-if-necessary)
-
         (message "Annotations in this buffer will be saved only if you save the buffer as a file.")))))
 
 ;;;###autoload
@@ -219,7 +234,7 @@
                         (ipa-previous)
                       (ipa-next))))
     (if annotation
-        (let* ((text (read-string "text (empty to remove): " (cdr  annotation))))
+        (let* ((text (ipa--read-string "Edit comment, empty to remove" (cdr  annotation))))
           (if (equal text "")
               (progn
                 (delete-overlay (car annotation))
