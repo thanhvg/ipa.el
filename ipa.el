@@ -682,6 +682,11 @@
     (if name
         (file-truename name))))
 
+(defun ipa-refresh ()
+  (interactive)
+  (ipa-clear)
+  (ipa-load-annotations-into-buffer))
+
 ;;;###autoload
 (define-minor-mode ipa-mode
   "FIXME."
