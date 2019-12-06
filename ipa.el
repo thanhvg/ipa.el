@@ -524,8 +524,6 @@
     retval))
 
 (defun ipa-set-overlay-text-above (overlay text)
-  (if (string-match ipa-annotation-id-regexp text)
-      (setq text (match-string 2 text)))
   (save-excursion
     (let ((ipa-indent-level (current-indentation)))
       (beginning-of-line)
@@ -552,8 +550,6 @@
       (ipa-sort-overlays))))
 
 (defun ipa-set-overlay-text-inline (overlay text)
-  (if (string-match ipa-annotation-id-regexp text)
-      (setq text (match-string 2 text)))
   (overlay-put overlay 'before-string
                (if (equal text "")
                    ""
