@@ -194,10 +194,10 @@
    ((string= ipa-overlay-position "above") 'ipa-set-overlay-text-above)))
 
 (defun ipa-create-overlay-function()
+  "Create overlay and save it to `ipa-annotations-in-buffer'"
   (cond
    ((string= ipa-overlay-position "inline") 'ipa-create-overlay-inline)
    ((string= ipa-overlay-position "above") 'ipa-create-overlay-above)))
-
 
 ;; https://stackoverflow.com/questions/16992726/how-to-prompt-the-user-for-a-block-of-text-in-elisp
 (defun ipa--read-string-with-multiple-line (prompt pre-string exit-keyseq)
@@ -215,7 +215,6 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
   (ipa--read-string-with-multiple-line (concat prompt " C-s to submit, C-g to cancel:\n")
                                        pre-string
                                        (kbd "C-s")))
-
 ;;;###autoload
 (defun ipa-insert ()
   (interactive)
@@ -233,21 +232,18 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
   (let ((annotation (if arg
                         (ipa-previous)
                       (ipa-next))))
-    (if annotation
-        (let* ((text (ipa--read-string "Edit comment, empty to remove" (cdr  annotation))))
-          (if (equal text "")
-              (progn
-                (delete-overlay (car annotation))
-                (setq ipa-annotations-in-buffer
-                      (delq annotation ipa-annotations-in-buffer))
-                (message "Deleted annotation."))
-
-            (funcall (ipa-set-overlay-text-function) (car annotation) text)
-            (setcdr annotation text)
-            (message "Updated annotation."))
-
-          (ipa-save-annotations-if-necessary t)))))
-
+    (when annotation
+      (let* ((text (ipa--read-string "Edit comment, empty to remove" (cdr  annotation))))
+        (if (equal text "")
+            (progn
+              (delete-overlay (car annotation))
+              (setq ipa-annotations-in-buffer
+                    (delq annotation ipa-annotations-in-buffer))
+              (message "Deleted annotation."))
+          (funcall (ipa-set-overlay-text-function) (car annotation) text)
+          (setcdr annotation text)
+          (message "Updated annotation."))
+        (ipa-save-annotations-if-necessary t)))))
 
 ;;;###autoload
 (defun ipa-move (&optional arg)
@@ -340,18 +336,14 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
   (interactive)
   (let ((annotations ipa-annotations-in-buffer)
         annotation)
-    (while (and annotations
-                (not annotation))
+    (while (and annotations (not annotation))
       (if (> (overlay-start (car (car annotations))) (point))
           (setq annotation (car annotations))
         (pop annotations)))
-
     (if (not annotation)
         (message "No annotations found after point.")
-
       (goto-char (overlay-start (car annotation)))
       (ipa-warn-if-annotation-is-empty (car annotation)))
-
     annotation))
 
 (defun ipa-previous ()
@@ -362,15 +354,11 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
     (while (and annotations continue)
       (if (> (overlay-start (car (car annotations))) (point))
           (setq continue nil)
-
         (setq annotation (pop annotations))))
-
     (if (not annotation)
         (message "No annotations found before point.")
-
       (goto-char (1- (overlay-start (car annotation))))
       (ipa-warn-if-annotation-is-empty (car annotation)))
-
     annotation))
 
 (defun ipa-warn-if-annotation-is-empty (overlay)
@@ -399,27 +387,21 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
           (message "No annotations found for file."))))))
 
 (defun ipa-save-annotations-in-buffer (&optional even-if-empty)
-  (when (or ipa-annotations-in-buffer
-            even-if-empty)
+  (when (or ipa-annotations-in-buffer even-if-empty)
     (let ((filename (ipa-get-buffer-file-name))
           (buffer (current-buffer))
           (annotations ipa-annotations-in-buffer))
       (with-current-buffer (ipa-find-storage-file)
         (save-excursion
           (goto-char (point-min))
-
-          (unless (re-search-forward (concat ipa-file-regexp
-                                             filename "\n")
-                                     nil t)
+          (unless (re-search-forward (concat ipa-file-regexp filename "\n") nil t)
             (goto-char (point-max))
             (insert ipa-file-marker " " filename "\n"))
-
           (let ((start (point)))
             (if (re-search-forward ipa-file-regexp nil t)
                 (beginning-of-line)
               (goto-char (point-max)))
             (delete-region start (point)))
-
           (if annotations
               (dolist (annotation annotations)
                 (let* ((pos (overlay-start (car annotation)))
@@ -446,10 +428,12 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
             (let ((end (point)))
               (forward-line -1)
               (delete-region (point) end)))
-
           (save-buffer))))))
 
 (defun ipa-load-annotations-into-buffer ()
+  "Search for and iterate saved comments.
+Each comment has pos and text which are passed to create overlay
+function."
   (let ((filename (ipa-get-buffer-file-name))
         (buffer (current-buffer)))
     (if (ipa-find-storage-file-p)
@@ -462,6 +446,7 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
                              (if (re-search-forward ipa-file-regexp nil t)
                                  (line-beginning-position)
                                (point-max)))))
+
                   (with-current-buffer buffer
                     (setq ipa-annotations-in-buffer nil))
 
@@ -473,7 +458,6 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
                             (funcall (ipa-create-overlay-function) pos text)
                             (setq text nil)
                             (setq pos nil)))
-
                       (cond ((let ((pos-info (ipa-get-pos-info)))
                                (when pos-info
                                  (let ((after (plist-get pos-info 'after))
@@ -504,10 +488,7 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
                                    (concat text "\n"
                                            (buffer-substring (1+ (point))
                                                              (line-end-position)))))
-
-                            (t
-                             'skip))
-
+                            (t 'skip))
                       (forward-line 1)))
 
                   (message "Resaving annotations so that positions are updated...")
@@ -525,9 +506,9 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
        (read (current-buffer))))
 
 (defun ipa-save-annotations-if-necessary (&optional even-if-empty)
-  (if (and (ipa-get-buffer-file-name)
-           (not (buffer-modified-p)))
-      (ipa-save-annotations-in-buffer even-if-empty)))
+  (when (and (ipa-get-buffer-file-name)
+             (not (buffer-modified-p)))
+    (ipa-save-annotations-in-buffer even-if-empty)))
 
 ;; OVERLAY ABOVE THE LINE
 
@@ -556,6 +537,7 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
                         "\n")))))))
 
 (defun ipa-create-overlay-above (pos text)
+  "Make overlay above pos and save (overlay . text) to `ipa-annotations-in-buffer'."
   (save-excursion
     (goto-char pos)
     (setq pos (point-at-bol))
@@ -565,7 +547,8 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
       (ipa-sort-overlays))))
 
 (defun ipa-set-overlay-text-inline (overlay text)
-  (overlay-put overlay 'before-string
+  (overlay-put overlay
+               'before-string
                (if (equal text "")
                    ""
                  (propertize (concat "[" text "]") 'face ipa-annotation-face))))

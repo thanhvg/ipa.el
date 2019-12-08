@@ -21,6 +21,5 @@ symbol-overlays uses
 
 add ipa-refresh for manual action
 
-  
-
-* multiline support on edit/insert commnets  with evil
+* multiline support on edit/insert comments  with evil
+* TODO annotation on region, drop inline annotations
