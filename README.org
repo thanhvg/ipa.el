@@ -61,3 +61,8 @@ a usual bookmark in emacs.
 Only annotations appearing in =ipa-file= can be jumped to, so unsaved
 annotations does not count. If there are more annotations defined with the same
 id then the first one found in =ipa-file= is used.
+** ipa-refresh
+refresh annotations for current buffer
+** ipa-delete 
+delete the first annotation after point
+with universal argument: before point
