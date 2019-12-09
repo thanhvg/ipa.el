@@ -246,6 +246,20 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
         (ipa-save-annotations-if-necessary t)))))
 
 ;;;###autoload
+(defun ipa-delete (&optional arg)
+  "Delete comment"
+  (interactive "P")
+  (let ((annotation (if arg
+                        (ipa-previous)
+                      (ipa-next))))
+    (when annotation
+      (delete-overlay (car annotation))
+      (setq ipa-annotations-in-buffer
+            (delq annotation ipa-annotations-in-buffer))
+      (message "Deleted annotation."))
+    (ipa-save-annotations-if-necessary t)))
+
+;;;###autoload
 (defun ipa-move (&optional arg)
   (interactive "P")
   (let ((annotation (if arg
