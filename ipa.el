@@ -200,21 +200,24 @@
    ((string= ipa-overlay-position "above") 'ipa-create-overlay-above)))
 
 ;; https://stackoverflow.com/questions/16992726/how-to-prompt-the-user-for-a-block-of-text-in-elisp
-(defun ipa--read-string-with-multiple-line (prompt pre-string exit-keyseq)
+(defun ipa--read-string-with-multiple-line (prompt pre-string exit-keyseq clear-keyseq)
   "Read multiline from minibuffer.
-PROMPT with PRE_STRING binds EXIT-KEYSQ to submit"
+PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear text."
   (let ((keymap (copy-keymap minibuffer-local-map))
         ;; enable evil in minibuffer
         ;; https://github.com/emacs-evil/evil/pull/1059
         (evil-want-minibuffer t))
     (define-key keymap (kbd "RET") 'newline)
     (define-key keymap exit-keyseq 'exit-minibuffer)
+    (define-key keymap clear-keyseq
+      (lambda () (interactive) (delete-region (minibuffer-prompt-end) (point-max))))
     (read-from-minibuffer prompt pre-string keymap)))
 
 (defun ipa--read-string (prompt &optional pre-string)
-  (ipa--read-string-with-multiple-line (concat prompt " C-s to submit, C-g to cancel:\n")
+  (ipa--read-string-with-multiple-line (concat prompt " C-s to submit, C-g to cancel, C-c C-k to clear:\n")
                                        pre-string
-                                       (kbd "C-s")))
+                                       (kbd "C-s")
+                                       (kbd "C-c C-k")))
 ;;;###autoload
 (defun ipa-insert ()
   (interactive)
