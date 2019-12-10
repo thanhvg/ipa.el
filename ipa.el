@@ -108,7 +108,7 @@
   "Function to get the name of the annotation storage file. By
   default it returns `ipa-file', but it can be used, for example,
   to use different storage files in each directory. See
-  `ipa-get-directory-file'"
+  `ipa-get-directory-file' and `ipa-get-project-file'"
   :type 'function
   :group 'ipa)
 
@@ -605,12 +605,21 @@ function."
                 ".ipa"))))
 
 (defun ipa-get-directory-file ()
+  "Return path to current .ipa file in the same directory with
+the file."
   (let ((current-file (ipa-get-buffer-file-name)))
     (if current-file
         (concat (if (file-directory-p current-file)
                     current-file
                   (file-name-directory current-file))
                 (file-name-nondirectory ipa-file)))))
+
+(defun ipa-get-project-file ()
+  "Return path to .ipa file at project root."
+  (let ((root (cdr (project-current))))
+    (if root
+        (concat root ".ipa")
+      (ipa-get-global-file))))
 
 (defun ipa-go-to-annotation ()
   (interactive)
@@ -690,8 +699,8 @@ function."
                   (save-excursion
                     (goto-char (point-min))
                     (dired-current-directory)))))
-    (if name
-        (file-truename name))))
+    (when name
+      (file-truename name))))
 
 (defun ipa-refresh ()
   (interactive)

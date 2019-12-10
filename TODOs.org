@@ -1,4 +1,21 @@
 * TODO project wise annotations
+ project-current 
+ 
+project-current is an autoloaded compiled Lisp function in ‘project.el’.
+
+(project-current &optional MAYBE-PROMPT DIR)
+
+Return the project instance in DIR or ‘default-directory’.
+When no project found in DIR, and MAYBE-PROMPT is non-nil, ask
+the user for a different directory to look in.  If that directory
+is not a part of a detectable project either, return a
+‘transient’ project instance rooted in it.
+#+begin_src elisp
+(let ((root (cdr (project-current))))
+  (setq-local
+   flycheck-clang-include-path (list (expand-file-name "dir/includes" root)
+                                     (expand-file-name "dir/src" root))))
+#+end_src
 * reloading buffer duplicates annotations
   fix: use before-revert-hook
 * TODO ipa-show can be called anywhere 
