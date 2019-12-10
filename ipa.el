@@ -392,7 +392,6 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear tex
   (interactive)
   (if (not (ipa-get-buffer-file-name))
       (message "This buffer has no associated file.")
-
     (let ((filename (ipa-get-buffer-file-name)))
       (with-current-buffer (ipa-find-storage-file)
         (goto-char (point-min))
@@ -622,12 +621,14 @@ the file."
       (ipa-get-global-file))))
 
 (defun ipa-go-to-annotation ()
+  "Go to annotation location.
+Go to file then go to pos"
   (interactive)
   (cond ((save-excursion
            (beginning-of-line)
            (looking-at (concat ipa-file-regexp "\\(.*\\)")))
+         (message (match-string 1))
          (find-file (match-string 1)))
-
         ((let ((pos-info (save-excursion
                            (beginning-of-line)
                            (ipa-get-pos-info))))
@@ -635,11 +636,9 @@ the file."
              (save-excursion
                (if (not (re-search-backward ipa-file-regexp nil t))
                    (error "Containing file header is not found")
-
                  (ipa-go-to-annotation)
                  (goto-char (plist-get pos-info 'pos))
                  t)))))
-
         ((save-excursion
            (beginning-of-line)
            (looking-at ipa-line-continuation))
@@ -647,10 +646,8 @@ the file."
            (if (re-search-backward "^(" nil t)
                (ipa-go-to-annotation)
              (error "Containing annotation is not found"))))
-
         (t
          (message "There is nothing on the current line."))))
-
 
 (defun ipa-font-lock-pos-info (limit)
   (when (re-search-forward "^(" limit t)

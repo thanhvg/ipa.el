@@ -1,4 +1,4 @@
-* TODO project wise annotations
+* DONE project wise annotations
  project-current 
  
 project-current is an autoloaded compiled Lisp function in ‘project.el’.
@@ -16,6 +16,8 @@ is not a part of a detectable project either, return a
    flycheck-clang-include-path (list (expand-file-name "dir/includes" root)
                                      (expand-file-name "dir/src" root))))
 #+end_src
+
+* TODO when on project ipa file should not use absolute path
 * reloading buffer duplicates annotations
   fix: use before-revert-hook
 * TODO ipa-show can be called anywhere 
