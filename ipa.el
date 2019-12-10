@@ -613,6 +613,7 @@ the file."
                   (file-name-directory current-file))
                 (file-name-nondirectory ipa-file)))))
 
+;;;###autoload
 (defun ipa-get-project-file ()
   "Return path to .ipa file at project root."
   (let ((root (cdr (project-current))))
@@ -627,8 +628,9 @@ Go to file then go to pos"
   (cond ((save-excursion
            (beginning-of-line)
            (looking-at (concat ipa-file-regexp "\\(.*\\)")))
-         (message (match-string 1))
-         (find-file (match-string 1)))
+         (find-file (if (equal ipa-file-function 'ipa-get-project-file)
+                        (concat (cdr (project-current)) (match-string 1))
+                     (match-string 1))))
         ((let ((pos-info (save-excursion
                            (beginning-of-line)
                            (ipa-get-pos-info))))
@@ -692,12 +694,21 @@ Go to file then go to pos"
           (message "There are no annotations with ids."))))))
 
 (defun ipa-get-buffer-file-name ()
+  "Return absolute path, when `ipa-get-project-file' is used
+return path from project root, nil when not a file."
   (let ((name (or (buffer-file-name)
                   (save-excursion
                     (goto-char (point-min))
                     (dired-current-directory)))))
     (when name
-      (file-truename name))))
+      (if (equal ipa-file-function 'ipa-get-project-file)
+          (let ((root (cdr (project-current)))
+                (file-abs-path (file-truename name)))
+            (substring file-abs-path
+                       (if root
+                           (length (file-truename root))
+                         0)))
+        (file-truename name)))))
 
 (defun ipa-refresh ()
   (interactive)

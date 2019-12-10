@@ -1,6 +1,6 @@
 * DONE project wise annotations
- project-current 
- 
+ project-current
+
 project-current is an autoloaded compiled Lisp function in ‘project.el’.
 
 (project-current &optional MAYBE-PROMPT DIR)
@@ -17,25 +17,30 @@ is not a part of a detectable project either, return a
                                      (expand-file-name "dir/src" root))))
 #+end_src
 
-* TODO when on project ipa file should not use absolute path
+* DONE when on project ipa file should not use absolute path
+use this to tell project option is set
+  (equal ipa-file-function 'ipa-get-project-file)
+
+make ipa-get-buffer-file-name return path relative from root
+make  ipa-go-to-annotation aware of this too
 * reloading buffer duplicates annotations
   fix: use before-revert-hook
-* TODO ipa-show can be called anywhere 
+* TODO ipa-show can be called anywhere
 currently if buffer has no anotations it's not possible to call
 * TODO ipa file can be org file
   and the ipa-mode now is minor mode
-* DONE ipa-delete function  
-delete above 
+* DONE ipa-delete function
+delete above
 delete bellow
-* minor mode 
+* minor mode
   make ipa-mode
-  can't make it a global mode because some mode such as helm-mode is incompatible with 
+  can't make it a global mode because some mode such as helm-mode is incompatible with
 
 * remove ipa-toggle and ipa-annotation-display
 now that it's a minor mode, ipa-toggle is working all buffers
 we need ipa-clear on current buffer
 * TODO handle overlays when text changes
-symbol-overlays uses 
+symbol-overlays uses
 (add-hook 'after-change-functions 'symbol-overlay-refresh)
 
 add ipa-refresh for manual action
@@ -44,6 +49,6 @@ add ipa-refresh for manual action
 * TODO annotation on region, drop inline annotations
 * TODO why the comments are not attached to any string in buffer
 delete string, comment remains
-comments must stick to string 
+comments must stick to string
 
-you need to listen to change hooks 
+you need to listen to change hooks
