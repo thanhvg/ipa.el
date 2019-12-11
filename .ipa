@@ -1,0 +1,7 @@
+ ipa.el
+(pos 8485 before "otation (if arg\n" after "                "):need to forward-char here
+
+(pos 22460 before " ipa-file)))))\n\n" after ";;;###autoload\n("):use project
+
+(pos 22887 before "p \"\\\\(.*\\\\)\")))\n" after "         (find-f"):take care of project option
+

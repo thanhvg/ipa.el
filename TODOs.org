@@ -52,3 +52,8 @@ delete string, comment remains
 comments must stick to string
 
 you need to listen to change hooks
+* DONE indent incorrect on edit above
+[[file:ipa.el::(defun ipa-set-overlay-text-above (overlay text)][indent]] value is not on the desired line on ipa-edit above (previous)
+because cursor is put on the line above
+
+fix: in ipa-edit when use ipa-previous, run also forward-char 

@@ -233,7 +233,12 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear tex
 (defun ipa-edit (&optional arg)
   (interactive "P")
   (let ((annotation (if arg
-                        (ipa-previous)
+                        (prog1
+                            (ipa-previous)
+                          ;; move cursor forward so indent value requested
+                          ;; in `ipa-set-overlay-text-above' is right on
+                          ;; the line not the line above
+                          (forward-char))
                       (ipa-next))))
     (when annotation
       (let* ((text (ipa--read-string "Edit comment, empty to remove" (cdr  annotation))))
@@ -537,20 +542,20 @@ function."
 
 (defun ipa-set-overlay-text-above (overlay text)
   (save-excursion
-    (let ((ipa-indent-level (current-indentation)))
-      (beginning-of-line)
-      (let ((text (mapconcat
-                   (lambda (it)
-                     (propertize it 'face ipa-annotation-face))
-                   (split-string text "\n")
-                   (concat "\n" (ipa-string-repeat " " (+ 2 ipa-indent-level))))))
-        (overlay-put overlay 'before-string
-                     (if (equal text "") ""
-                       (concat
-                        (ipa-string-repeat " " ipa-indent-level)
-                        "* "
-                        text
-                        "\n")))))))
+    (beginning-of-line)
+    (let* ((ipa-indent-level (current-indentation))
+           (text (mapconcat
+                  (lambda (it)
+                    (propertize it 'face ipa-annotation-face))
+                  (split-string text "\n")
+                  (concat "\n" (ipa-string-repeat " " (+ 2 ipa-indent-level))))))
+      (overlay-put overlay 'before-string
+                   (if (equal text "") ""
+                     (concat
+                      (ipa-string-repeat " " ipa-indent-level)
+                      "* "
+                      text
+                      "\n"))))))
 
 (defun ipa-create-overlay-above (pos text)
   "Make overlay above pos and save (overlay . text) to `ipa-annotations-in-buffer'."
@@ -630,7 +635,7 @@ Go to file then go to pos"
            (looking-at (concat ipa-file-regexp "\\(.*\\)")))
          (find-file (if (equal ipa-file-function 'ipa-get-project-file)
                         (concat (cdr (project-current)) (match-string 1))
-                     (match-string 1))))
+                      (match-string 1))))
         ((let ((pos-info (save-excursion
                            (beginning-of-line)
                            (ipa-get-pos-info))))
