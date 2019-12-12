@@ -23,20 +23,22 @@ use this to tell project option is set
 
 make ipa-get-buffer-file-name return path relative from root
 make  ipa-go-to-annotation aware of this too
-* reloading buffer duplicates annotations
+* DONE reloading buffer duplicates annotations
   fix: use before-revert-hook
-* TODO ipa-show can be called anywhere
+* DONE ipa-show-all can be called anywhere
 currently if buffer has no anotations it's not possible to call
+fixed: add ipa-show-all
+* TODO ipa-show should show only annotation of the current buffer
 * TODO ipa file can be org file
   and the ipa-mode now is minor mode
 * DONE ipa-delete function
 delete above
 delete bellow
-* minor mode
+* DONE minor mode
   make ipa-mode
   can't make it a global mode because some mode such as helm-mode is incompatible with
 
-* remove ipa-toggle and ipa-annotation-display
+* DONE remove ipa-toggle and ipa-annotation-display
 now that it's a minor mode, ipa-toggle is working all buffers
 we need ipa-clear on current buffer
 * TODO handle overlays when text changes
@@ -45,7 +47,23 @@ symbol-overlays uses
 
 add ipa-refresh for manual action
 
-* multiline support on edit/insert comments  with evil
+* DONE multiline support on edit/insert comments  with evil :TIL:
+make minibuffer to work as a normal buffer. This one can be useful as a lib
+#+begin_src elisp
+;; https://stackoverflow.com/questions/16992726/how-to-prompt-the-user-for-a-block-of-text-in-elisp
+(defun ipa--read-string-with-multiple-line (prompt pre-string exit-keyseq clear-keyseq)
+  "Read multiline from minibuffer.
+PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear text."
+  (let ((keymap (copy-keymap minibuffer-local-map))
+        ;; enable evil in minibuffer
+        ;; https://github.com/emacs-evil/evil/pull/1059
+        (evil-want-minibuffer t))
+    (define-key keymap (kbd "RET") 'newline)
+    (define-key keymap exit-keyseq 'exit-minibuffer)
+    (define-key keymap clear-keyseq
+      (lambda () (interactive) (delete-region (minibuffer-prompt-end) (point-max))))
+    (read-from-minibuffer prompt pre-string keymap)))
+#+end_src
 * TODO annotation on region, drop inline annotations
 * TODO why the comments are not attached to any string in buffer
 delete string, comment remains
@@ -57,3 +75,5 @@ you need to listen to change hooks
 because cursor is put on the line above
 
 fix: in ipa-edit when use ipa-previous, run also forward-char 
+
+this is not a very clean fix

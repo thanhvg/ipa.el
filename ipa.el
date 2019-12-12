@@ -394,6 +394,8 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear tex
 
 ;;;###autoload
 (defun ipa-show ()
+  "If buffer has annotaions, open storage file and go to file
+name line."
   (interactive)
   (if (not (ipa-get-buffer-file-name))
       (message "This buffer has no associated file.")
@@ -401,11 +403,19 @@ PROMPT with PRE_STRING binds EXIT-KEYSQ to submit binds CLEAR-KEYSQ to clear tex
       (with-current-buffer (ipa-find-storage-file)
         (goto-char (point-min))
         (if (re-search-forward (concat ipa-file-regexp
-                                       filename "\n")
-                               nil t)
+                                       filename
+                                       "\n")
+                               nil
+                               t)
             (switch-to-buffer (current-buffer))
 
           (message "No annotations found for file."))))))
+
+;;;###autoload
+(defun ipa-show-all ()
+  "Show current ipa storage file in use."
+  (interactive)
+  (switch-to-buffer (ipa-find-storage-file)))
 
 (defun ipa-save-annotations-in-buffer (&optional even-if-empty)
   (when (or ipa-annotations-in-buffer even-if-empty)
