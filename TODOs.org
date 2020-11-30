@@ -1,3 +1,5 @@
+#+startup:    content indent
+
 * DONE project wise annotations
  project-current
 
@@ -77,3 +79,7 @@ because cursor is put on the line above
 fix: in ipa-edit when use ipa-previous, run also forward-char 
 
 this is not a very clean fix
+* TODO understand how IPL mode works
+** how font lock works
+done
+** how we load data
