@@ -83,3 +83,22 @@ this is not a very clean fix
 ** how font lock works
 done
 ** how we load data
+* TODO drop in place only use inline comment
+(line-number-at-pos)
+format
+filename
+linenume:comment
+use \a as newline signature
+
+#+begin_src 
+^Lfile 1
+123:this is the comment
+this is the comment on the second line
+\a\n
+
+number:whatever between till \a\n
+#+end_src
+
+
+
+

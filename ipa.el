@@ -2,6 +2,7 @@
 
 ;; Copyright (C) 2007  Tamas Patrovics
 ;; Updated 2012  Ido Magal
+;; Version: 0.0.1
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

@@ -1,8 +1,8 @@
  ipa.el
-(pos 8485 before "otation (if arg\n" after "                "):need to forward-char here
+(pos 8503 before "otation (if arg\n" after "                "):need to forward-char here
 
-(pos 22747 before " ipa-file)))))\n\n" after ";;;###autoload\n("):use project
+(pos 22765 before " ipa-file)))))\n\n" after ";;;###autoload\n("):use project
 |multiple line really
 
-(pos 23174 before "p \"\\\\(.*\\\\)\")))\n" after "         (find-f"):take care of project option
+(pos 23192 before "p \"\\\\(.*\\\\)\")))\n" after "         (find-f"):take care of project option
 
